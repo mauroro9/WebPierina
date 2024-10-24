@@ -1,0 +1,30 @@
+name: Deploy to Firebase Hosting on PR
+
+on:
+  push:
+    branches:
+      - main  # Puedes cambiar esto si usas una rama diferente
+  pull_request:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Deploy to Firebase Hosting
+      env:
+        FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      run: |
+        echo "${FIREBASE_SERVICE_ACCOUNT}" > "${HOME}/firebase-service-account.json"
+        firebase deploy --only hosting --token "$FIREBASE_SERVICE_ACCOUNT"
